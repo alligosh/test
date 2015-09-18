@@ -1,0 +1,77 @@
+#!/usr/bin/perl -w
+
+use LWP::UserAgent;
+use Getopt::Std;
+
+our ($opt_h, $opt_o, $opt_u, $opt_p, $opt_n);
+
+getopts('hou:p:n:');
+
+if ($opt_h) {
+  print "usage: $0 [-h] [-o] [-u host] [-p port] [-n number]\n\n";
+  print "    -h:  help (this output)\n";
+  print "    -o:  output fibbinacci sequence\n";
+  print "    -u host:  set connect host\n";
+  print "    -p port:  set connect port\n";
+  print "    -n:  number of items to retrive\n\n";
+  print "    defaults are localhost, 54321, and num=15\n";
+  exit 0;
+}
+
+my $host = $opt_u || 'localhost';
+my $port = $opt_p || '54321'; 
+my $num = $opt_n || '15';
+
+my $myurl = "http://$host:$port/getfibb?num=$num";
+
+print "using: http://$host:$port/getfibb?num=$num\n";
+
+my $ua = new LWP::UserAgent; $ua->agent("$0/0.1 " . $ua->agent);
+$ua->agent("Stevezilla/1.0");
+
+# pretend we are very capable browser
+my $req = new HTTP::Request 'GET' => "$myurl";
+$req->header('Accept' => 'text/html');
+
+#send request
+my $res = $ua->request($req);
+
+#check the outcome
+if ($res->is_success) {
+  my $content = $res->content;
+
+  print "$content\n\n" if $opt_o;
+
+  # remove known cruft from data stream
+  chomp($content);
+  chop($content);
+  $content =~ s/\[//g;
+
+  # split into array and reverse order
+  my @values = reverse ( split(/\,\s*/, $content) );
+
+  # test numbers in reverse fibbanacci order
+  my $error = 0;
+  for ( my $x = 0; $x <= ( (scalar @values) - 3); $x++) {
+    if ($values[$x] - $values[$x +1] != $values[$x + 2]) {
+      print "Error in math sequence at element $x: $values[$x] - $values[$x +1] == $values[$x + 2]\n";
+      $error = 1;
+    }
+  }
+
+  if ((scalar @values) != $num) {
+    print "number of elements does not match number requested\n";
+    $error = 1;
+  }
+
+  if ($error == 0 ) {
+    print "Test Succeeded!\n";
+  }
+
+  
+} else {  
+  print "Error: " . $res->status_line . "\n";
+  exit 1;
+} 
+
+
