@@ -34,7 +34,7 @@ GET /getfibb?num=5
 
 # or use the test script
 
-$ ./testfibb
+$ perl ./testfibb
 using: http://localhost:54321/getfibb?num=15
 <p>Test Succeeded!
 
@@ -58,5 +58,5 @@ usage: ./testfibb [-h] [-o] [-u host] [-p port] [-n number]
 
   - server does not handle multiple input variables
   - server does not output proper headers to make real browsers happy
-  
+  - probable misspelling of Fibanacci
  
