@@ -60,17 +60,20 @@ if ($res->is_success) {
     }
   }
 
+  # check number of elemets requested against number returned
   if ((scalar @values) != $num) {
     print "number of elements does not match number requested\n";
     $error = 1;
   }
 
+  # give output if no errors
   if ($error == 0 ) {
     print "Test Succeeded!\n";
   }
 
   
 } else {  
+  # throw error for debugging purposes
   print "Error: " . $res->status_line . "\n";
   print "\n\nDEBUG:\n" . $res->as_string . "\n";
   exit 1;

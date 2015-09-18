@@ -21,11 +21,9 @@
           }
           
           if ($request->method eq 'GET' and $request->url->path eq "/getfibb" and $error eq '') {
-              # put fibb stuff here
+              # do response stuff
               my $response = HTTP::Response->new(RC_OK, "OK");
               $response->header('content-type' => 'text/plain');
-              # $response->content('yeah, right\n');
-              #$response->content($request->as_string . "$fibb_num");
               $response->content(dofibb($fibb_num) . "\n");
               $connection->send_response($response);
           } else {
@@ -53,18 +51,18 @@ sub dofibb {  # I know this won't allow sequences less than 2, but it isn't real
     my $x = $cache[(scalar @cache) - 2]; # load with last two values from the cache
     my $y = $cache[(scalar @cache) - 1];
 
-    for ( $start .. ($n - 2) ) {  # remove the two we prepopulate the cache with
+    for ( $start .. ($n - 2) ) {  # lower $n by two since we prepopulate the cache by that many, and generate remaining
       ( $x, $y ) = ( $y, $x+$y );
       $response .= ", $y";
-      push @cache, $y;
+      push @cache, $y; # update cache
     }
   } else {
-    $response = getcache($n - 1); # just use cache of previously generated numbers
+    $response = getcache($n - 1); # just use cache of previously generated numbers; may not be needed since we cache full output above
   }
 
   $response .= "]";
 
-  $outputcache[$n] = $response;
+  $outputcache[$n] = $response; # update output cache
   return $response;
 }
 
