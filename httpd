@@ -57,7 +57,7 @@ sub dofibb {  # I know this won't allow sequences less than 2, but it isn't real
       push @cache, $y; # update cache
     }
   } else {
-    $response = getcache($n - 1); # just use cache of previously generated numbers; may not be needed since we cache full output above
+    $response = getcache($n - 1); # just use cache of previously generated numbers
   }
 
   $response .= "]";
