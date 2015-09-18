@@ -2,6 +2,7 @@
 
 use LWP::UserAgent;
 use Getopt::Std;
+use bigint;
 
 our ($opt_h, $opt_o, $opt_u, $opt_p, $opt_n);
 
@@ -53,8 +54,8 @@ if ($res->is_success) {
   # test numbers in reverse fibbanacci order
   my $error = 0;
   for ( my $x = 0; $x <= ( (scalar @values) - 3); $x++) {
-    if ($values[$x] - $values[$x +1] != $values[$x + 2]) {
-      print "Error in math sequence at element $x: $values[$x] - $values[$x +1] == $values[$x + 2]\n";
+    if ( (0 + $values[$x] - $values[$x+1]) != $values[$x+2] + 0) { # add zeros to force treatment as numbers so bigint will apply
+      print "Error in math sequence at element $x: $values[$x] - $values[$x+1] != $values[$x+2]\n";
       $error = 1;
     }
   }
@@ -71,6 +72,7 @@ if ($res->is_success) {
   
 } else {  
   print "Error: " . $res->status_line . "\n";
+  print "\n\nDEBUG:\n" . $res->as_string . "\n";
   exit 1;
 } 
 

@@ -3,8 +3,10 @@
   use HTTP::Daemon;
   use HTTP::Status;
   use URI::Split qw(uri_split);
+  use bigint;
 
-  my @cache = (0, 1);
+  my @cache = (0, 1);  # initial cache of previously calculated values
+  my %outputcache;  # define response cache of previously requested numbers
 
   my $daemon = new HTTP::Daemon LocalPort => 54321;
   print "Please connect to me at: <URL:", $daemon->url, ">\n";  # print out where people can connect
@@ -40,6 +42,11 @@ sub dofibb {  # I know this won't allow sequences less than 2, but it isn't real
   my $response = "[$x, $y";
   my $start = 3;
 
+  if (exists($outputcache[$n])) {  # check if we have done this specific sequence before, and if so just spit it out
+    $response = $outputcache[$n];
+    return $response;
+  }
+
   if ($n >= ((scalar @cache) - 1)) {  # prepopulate with cache of previously generated numbers, then generate new numbers
     $start = (scalar @cache) - 1;
     $response = getcache($start);
@@ -47,17 +54,17 @@ sub dofibb {  # I know this won't allow sequences less than 2, but it isn't real
     my $y = $cache[(scalar @cache) - 1];
 
     for ( $start .. ($n - 2) ) {  # remove the two we prepopulate the cache with
-    #for ( my $i = $start; $i <= ($n - 2); $i++) {  # remove the two we prepopulate the cache with
       ( $x, $y ) = ( $y, $x+$y );
       $response .= ", $y";
       push @cache, $y;
     }
   } else {
-    $response = getcache($n); # just use cache of previously generated numbers
+    $response = getcache($n - 1); # just use cache of previously generated numbers
   }
 
-
   $response .= "]";
+
+  $outputcache[$n] = $response;
   return $response;
 }
 
