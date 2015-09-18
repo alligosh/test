@@ -5,11 +5,11 @@
 As part of your interview process, would it be possible for you to complete a short code screening for us?
 
 Please provide a sample project for review:
-1. The project should provide a web service.
+<br>1. The project should provide a web service.
   a. The web service accepts a number, n, as input and returns the first n Fibonacci numbers, starting from 0. I.e. given n = 5, appropriate output would represent the sequence "[0, 1, 1, 2, 3]".
   b. Given a negative number, it will respond with an appropriate error.
-2. Include whatever instructions are necessary to build and deploy/run the project, where "deploy/run" means the web service is accepting requests and responding to them as appropriate.
-3. Include some tests
+<br>2. Include whatever instructions are necessary to build and deploy/run the project, where "deploy/run" means the web service is accepting requests and responding to them as appropriate.
+<br>3. Include some tests
 
 While this project is admittedly trivial, approach it as representing a more complex problem that you'll have to put into production and maintain for 5 years.
 Providing a link to a github/bitbucket repo with the project would probably be the easiest way to submit.
@@ -30,13 +30,13 @@ $ perl ./httpd
 
 $ nc localhost 54321
 GET /getfibb?num=5
-[0, 1, 1, 2, 3]
+<p>[0, 1, 1, 2, 3]
 
 # or use the test script
 
 $ ./testfibb
 using: http://localhost:54321/getfibb?num=15
-Test Succeeded!
+<p>Test Succeeded!
 
 
 # test script will take arguments
