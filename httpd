@@ -4,6 +4,8 @@
   use HTTP::Status;
   use URI::Split qw(uri_split);
 
+  my @cache = (0, 1);
+
   my $daemon = new HTTP::Daemon LocalPort => 54321;
   print "Please connect to me at: <URL:", $daemon->url, ">\n";  # print out where people can connect
   while (my $connection = $daemon->accept) {
@@ -12,8 +14,8 @@
           my ($name, $fibb_num) = split (/num\=\s*/, $query);    # parse num; not ideal, only one variable; dont want a framework
           my $error = '';
 
-          if ($fibb_num !~ /^\d+$/ or $fibb_num < 0) {
-             $error = "number entered is out of range";
+          if ($fibb_num !~ /^\d+$/ or $fibb_num < 0) {  # dont allow non numbers or negative numbers
+             $error = "number entered is out of range, negative, or not a number";
           }
           
           if ($request->method eq 'GET' and $request->url->path eq "/getfibb" and $error eq '') {
@@ -22,7 +24,7 @@
               $response->header('content-type' => 'text/plain');
               # $response->content('yeah, right\n');
               #$response->content($request->as_string . "$fibb_num");
-              $response->content(dofibb($fibb_num));
+              $response->content(dofibb($fibb_num) . "\n");
               $connection->send_response($response);
           } else {
               $connection->send_error(RC_FORBIDDEN, $error)
@@ -33,17 +35,39 @@
   }
 
 
-sub dofibb {  #I know this won't allow sequences less than 2, but it isn't really a sequence with less than 2
+sub dofibb {  # I know this won't allow sequences less than 2, but it isn't really a sequence with less than 2
   my $n = shift;
-  my $x = 0;
-  my $y = 1;
   my $response = "[$x, $y";
+  my $start = 3;
 
-  for ( 3 .. $n ) {
-    ( $x, $y ) = ( $y, $x+$y );
-    $response .= ", $y";
+  if ($n >= ((scalar @cache) - 1)) {  # prepopulate with cache of previously generated numbers, then generate new numbers
+    $start = (scalar @cache) - 1;
+    $response = getcache($start);
+    my $x = $cache[(scalar @cache) - 2]; # load with last two values from the cache
+    my $y = $cache[(scalar @cache) - 1];
+
+    for ( $start .. ($n - 2) ) {  # remove the two we prepopulate the cache with
+    #for ( my $i = $start; $i <= ($n - 2); $i++) {  # remove the two we prepopulate the cache with
+      ( $x, $y ) = ( $y, $x+$y );
+      $response .= ", $y";
+      push @cache, $y;
+    }
+  } else {
+    $response = getcache($n); # just use cache of previously generated numbers
   }
+
 
   $response .= "]";
   return $response;
+}
+
+sub getcache {  # populate response with pre-calcualted values
+  my $end = shift;
+  my $resp = "[0";
+
+  for (my $i=1; $i <= $end; $i++) {
+    $resp .= ", $cache[$i]";
+  }
+
+  return $resp;
 }
