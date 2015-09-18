@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+
+  use HTTP::Daemon;
+  use HTTP::Status;
+  use URI::Split qw(uri_split);
+
+  my $daemon = new HTTP::Daemon LocalPort => 54321;
+  print "Please connect to me at: <URL:", $daemon->url, ">\n";
+  while (my $connection = $daemon->accept) {
+      while (my $request = $connection->get_request) {
+          my ($scheme, $auth, $path, $query, $frag) = uri_split($request->url->as_string);
+          if ($request->method eq 'GET' and $request->url->path eq "/xyzzy") {
+              # put fibb stuff here
+              my $response = HTTP::Response->new(RC_OK, "OK");
+              $response->header('content-type' => 'text/plain');
+              # $response->content('yeah, right\n');
+              $response->content($request->as_string . "$path:$query");
+              $connection->send_response($response);
+          } else {
+              $connection->send_error(RC_FORBIDDEN)
+          }
+      }
+      $connection->close;
+      undef($connection);
+  }
