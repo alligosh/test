@@ -5,21 +5,45 @@
   use URI::Split qw(uri_split);
 
   my $daemon = new HTTP::Daemon LocalPort => 54321;
-  print "Please connect to me at: <URL:", $daemon->url, ">\n";
+  print "Please connect to me at: <URL:", $daemon->url, ">\n";  # print out where people can connect
   while (my $connection = $daemon->accept) {
       while (my $request = $connection->get_request) {
-          my ($scheme, $auth, $path, $query, $frag) = uri_split($request->url->as_string);
-          if ($request->method eq 'GET' and $request->url->path eq "/xyzzy") {
+          my ($scheme, $auth, $path, $query, $frag) = uri_split($request->url->as_string); # split the url to get key value pair
+          my ($name, $fibb_num) = split (/num\=\s*/, $query);    # parse num; not ideal, only one variable; dont want a framework
+          my $error = '';
+
+          if ($fibb_num !~ /^\d+$/ or $fibb_num < 0) {
+             $error = "number entered is out of range";
+          }
+          
+          if ($request->method eq 'GET' and $request->url->path eq "/getfibb" and $error eq '') {
               # put fibb stuff here
               my $response = HTTP::Response->new(RC_OK, "OK");
               $response->header('content-type' => 'text/plain');
               # $response->content('yeah, right\n');
-              $response->content($request->as_string . "$path:$query");
+              #$response->content($request->as_string . "$fibb_num");
+              $response->content(dofibb($fibb_num));
               $connection->send_response($response);
           } else {
-              $connection->send_error(RC_FORBIDDEN)
+              $connection->send_error(RC_FORBIDDEN, $error)
           }
       }
       $connection->close;
       undef($connection);
   }
+
+
+sub dofibb {  #I know this won't allow sequences less than 2, but it isn't really a sequence with less than 2
+  my $n = shift;
+  my $x = 0;
+  my $y = 1;
+  my $response = "[$x, $y";
+
+  for ( 3 .. $n ) {
+    ( $x, $y ) = ( $y, $x+$y );
+    $response .= ", $y";
+  }
+
+  $response .= "]";
+  return $response;
+}
