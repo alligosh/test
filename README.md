@@ -20,6 +20,9 @@ Providing a link to a github/bitbucket repo with the project would probably be t
   - cache of previous calculated ranges, does not repeat the math
   - cache of previously requested numbers (num=$x), does not have to calculate anything
 
+# note
+
+Realistically, if this were to be a production app to be run for five plus years, I would use nginx and a framework like Mojolicious.
 
 # test by starting the http server, then manually requesting data, or using the test script
 
