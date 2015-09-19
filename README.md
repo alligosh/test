@@ -17,7 +17,7 @@ Providing a link to a github/bitbucket repo with the project would probably be t
 
 # Features:
 
-  - cache of previous calculated ranges, does not repeat the math
+  - cache of previous calculated elements, does not repeat math it's already done
   - cache of previously requested numbers (num=$x), does not have to calculate anything
 
 # note
@@ -29,16 +29,16 @@ Realistically, if this were to be a production app to be run for five plus years
 # in one terminal, start the web service
 $ perl ./httpd
 
-# in a seperate terminal, manually test, maming sure to set num=value
+# in a seperate terminal, manually test, making sure to set num=value
 
 $ nc localhost 54321
-GET /getfibb?num=5
+<p>GET /getfibb?num=5
 <p>[0, 1, 1, 2, 3]
 
 # or use the test script
 
 $ perl ./testfibb
-using: http://localhost:54321/getfibb?num=15
+<p>using: http://localhost:54321/getfibb?num=15
 <p>Test Succeeded!
 
 
